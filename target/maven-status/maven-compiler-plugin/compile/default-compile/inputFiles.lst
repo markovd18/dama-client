@@ -1,4 +1,6 @@
-/home/markovda/Skola/repos/dama-client/src/main/java/cz/markovda/PrimaryController.java
-/home/markovda/Skola/repos/dama-client/src/main/java/cz/markovda/SecondaryController.java
+/home/markovda/Skola/repos/dama-client/src/main/java/cz/markovda/view/Viewer.java
+/home/markovda/Skola/repos/dama-client/src/main/java/cz/markovda/controller/LoginController.java
+/home/markovda/Skola/repos/dama-client/src/main/java/cz/markovda/connection/Connector.java
 /home/markovda/Skola/repos/dama-client/src/main/java/module-info.java
 /home/markovda/Skola/repos/dama-client/src/main/java/cz/markovda/App.java
+/home/markovda/Skola/repos/dama-client/src/main/java/cz/markovda/controller/ConnectionController.java
