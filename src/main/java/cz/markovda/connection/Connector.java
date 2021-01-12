@@ -1,5 +1,9 @@
 package cz.markovda.connection;
 
+import cz.markovda.connection.vo.Server;
+import cz.markovda.connection.vo.SessionInfo;
+import cz.markovda.connection.vo.User;
+import cz.markovda.request.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +27,9 @@ public class Connector {
      */
     private static final Connector INSTANCE = new Connector();
 
+    private static final char PARAM_DELIMITER = '|';
+    private static final char STOP_CHAR = '\n';
+
     /**
      * Socket for connection to remote server.
      */
@@ -32,6 +39,11 @@ public class Connector {
      * Are we connected to server?
      */
     private boolean connected = false;
+
+    /**
+     * Information about current connection session.
+     */
+    private SessionInfo sessionInfo;
 
     /**
      * Returns the single one existing instance of this class.
@@ -63,6 +75,7 @@ public class Connector {
 
         if (connectionSocket.isConnected()) {
             connected = true;
+            sessionInfo = new SessionInfo(new Server(host, port), new User());
             logger.debug("Connected...");
         } else {
             throw new IOException("Error establishing connection to server");
@@ -74,13 +87,14 @@ public class Connector {
      * Sends given message to the server we are connected to. If we are not connected to any server,
      * doesn't do anything.
      *
-     * @param message message to send
+     * @param request request to send
      */
-    public void sendMessage(final String message) {
-        if (!connected || message == null || message.isEmpty()) {
+    public void sendRequest(final Request request) {
+        if (!connected || request == null) {
             return;
         }
 
+        String message = createMessage(request);
         OutputStream outputStream;
         try {
             outputStream = getStreamToServer();
@@ -102,9 +116,12 @@ public class Connector {
         }
 
         try {
+            logger.info("Disconnecting from {}:{}", sessionInfo.getServer().getAddress(), sessionInfo.getServer().getPort());
             connectionSocket.close();
             connected = false;
             connectionSocket = null;
+            sessionInfo.setServer(null);
+            sessionInfo.setUser(null);
         } catch (IOException e) {
             logger.error("Error closing server connection socket!", e);
         }
@@ -117,6 +134,15 @@ public class Connector {
      */
     public boolean isConnected() {
         return connected;
+    }
+
+    /**
+     * Returns information about current connection session.
+     *
+     * @return session info
+     */
+    public SessionInfo getSessionInfo() {
+        return sessionInfo;
     }
 
     /**
@@ -157,5 +183,23 @@ public class Connector {
         }
 
         return inputStream;
+    }
+
+    private String createMessage(final Request request) {
+        if (request == null) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder(String.valueOf(sessionInfo.getUser().getUserId()))
+                .append(PARAM_DELIMITER)
+                .append(request.getRequestType().name());
+
+        for (String param : request.getParameters()) {
+            sb.append(PARAM_DELIMITER)
+                    .append(param);
+        }
+        sb.append(STOP_CHAR);
+
+        return sb.toString();
     }
 }

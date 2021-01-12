@@ -8,11 +8,11 @@ package cz.markovda.request;
  */
 public class RequestFactory {
 
-    public static String createLoginRequest(final String nickname) {
+    public static Request createLoginRequest(final String nickname) {
         if (nickname == null || nickname.isEmpty()) {
             return null;
         }
 
-        return "CONNECT|" + nickname + '\n';
+        return new Request(RequestType.CONNECT, nickname);
     }
 }

@@ -1,9 +1,11 @@
 package cz.markovda.controller;
 
 import cz.markovda.connection.Connector;
+import cz.markovda.request.Request;
 import cz.markovda.request.RequestFactory;
 import cz.markovda.view.Renderer;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,23 +17,34 @@ public class LoginController extends ApplicationController {
     @FXML
     private TextField nicknameInput;
 
+    @FXML
+    private Label serverInfoLabel;
+
     public void loginToServer() {
-        //TODO markovda create appropriate login request
         String nickname = nicknameInput.getText();
         logger.info("Logging in with nickname {}", nickname);
 
-        String loginRequest = RequestFactory.createLoginRequest(nickname);
+        Request loginRequest = RequestFactory.createLoginRequest(nickname);
         if (loginRequest == null) {
             Renderer.showInformationWindow("Please fill your nickname!");
             return;
         }
 
-        Connector.getInstance().sendMessage(loginRequest);
+        Connector.getInstance().sendRequest(loginRequest);
+        //TODO markovda display "progressbar" and wait for confirmation message
 
     }
 
     @FXML
+    public void setServerInfo(final String address, final String port) {
+        serverInfoLabel.setText(address + ':' + port);
+        serverInfoLabel.setOpacity(1);
+        //TODO markovda label doesn't change when window is rendered
+    }
+
+    @FXML
     private void switchToConnectionScreen() {
+        Connector.getInstance().disconnect();
         Renderer.displayConnectionScreen();
     }
 }

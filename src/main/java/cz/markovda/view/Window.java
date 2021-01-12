@@ -10,10 +10,10 @@ public enum Window {
     CONNECTION_SCREEN("connectionScreen.fxml"),
     LOGIN_SCREEN("loginScreen.fxml");
 
-    private final String path;
+    private final String fileName;
 
     Window(final String path){
-        this.path = path;
+        this.fileName = path;
     }
 
     /**
@@ -21,7 +21,7 @@ public enum Window {
      *
      * @return relative path (filename) to the fxml file
      */
-    public String getPath() {
-        return path;
+    public String getFileName() {
+        return fileName;
     }
 }

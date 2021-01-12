@@ -42,6 +42,10 @@ public class ConnectionController extends ApplicationController {
 
     @FXML
     private void switchToLoginScreen() throws IOException {
-        Renderer.displayLoginScreen();
+        LoginController loginController = ControllerFactory.getLoginController();
+        if (loginController != null) {
+            Renderer.displayLoginScreen();
+            loginController.setServerInfo(addressInput.getText(), portInput.getText());
+        }
     }
 }

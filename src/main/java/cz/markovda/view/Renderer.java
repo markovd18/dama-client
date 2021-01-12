@@ -1,6 +1,5 @@
 package cz.markovda.view;
 
-import cz.markovda.App;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -40,6 +39,7 @@ public class Renderer {
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setScene(scene);
         scene.setFill(Color.TRANSPARENT);
+        stage.setTitle("Draughts");
         stage.show();
         setMoveListeners(stage);
     }
@@ -98,7 +98,7 @@ public class Renderer {
 
 
     private static Parent loadFXML(final Window window) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(window.getPath()));
+        FXMLLoader fxmlLoader = new FXMLLoader(new ViewLoader().loadView(window));
         return fxmlLoader.load();
     }
 
