@@ -18,16 +18,28 @@
                <children>
                   <AnchorPane layoutX="276.0" layoutY="191.0" prefHeight="318.0" prefWidth="313.0" style="-fx-background-color: white; -fx-background-radius: 155px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 20, 0, 0, 0);">
                      <children>
-                        <TextField fx:id="nicknameInput" layoutX="65.0" layoutY="189.0" prefHeight="28.0" prefWidth="184.0" />
-                        <Label id="errorLabel" layoutX="132.0" layoutY="159.0" text="Nickname" />
-                        <Button layoutX="65.0" layoutY="230.0" mnemonicParsing="false" onAction="#loginToServer" prefHeight="28.0" prefWidth="62.0" text="Login" />
-                      <Button layoutX="140.0" layoutY="230.0" mnemonicParsing="false" onAction="#switchToConnectionScreen" prefHeight="28.0" prefWidth="109.0" text="Change server" />
-                        <Label layoutX="92.0" layoutY="53.0" text="Selected server">
+                        <TextField fx:id="nicknameInput" layoutX="60.0" layoutY="190.0" prefHeight="28.0" prefWidth="193.0" />
+                        <Label id="errorLabel" layoutX="118.0" layoutY="159.0" text="Nickname">
                            <font>
-                              <Font name="System Bold" size="18.0" />
+                              <Font name="System Bold" size="15.0" />
+                           </font></Label>
+                        <Button layoutX="60.0" layoutY="230.0" mnemonicParsing="false" onAction="#loginToServer" prefHeight="39.0" prefWidth="62.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 0);" text="Login">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font></Button>
+                      <Button layoutX="137.0" layoutY="230.0" mnemonicParsing="false" onAction="#switchToConnectionScreen" prefHeight="39.0" prefWidth="117.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 0);" text="Change server">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font></Button>
+                        <Label layoutX="83.0" layoutY="49.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 15, 0, 0, 0);" text="Selected server">
+                           <font>
+                              <Font name="System Bold" size="20.0" />
                            </font>
                         </Label>
-                        <Label fx:id="serverInfoLabel" layoutX="140.0" layoutY="78.0" style="-fx-opacity: 0;" text="Label" />
+                        <Label fx:id="serverInfoLabel" alignment="CENTER" layoutX="30.0" layoutY="89.0" prefHeight="18.0" prefWidth="254.0" text="Label">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Label>
                      </children>
                   </AnchorPane>
                </children>

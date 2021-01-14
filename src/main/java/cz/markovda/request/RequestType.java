@@ -7,5 +7,9 @@ public enum RequestType {
     /**
      * Request to connect to the server. Requires player nickname as a parameter.
      */
-    CONNECT
+    CONNECT,
+    /**
+     * Request to logout the player from the server. Doesn't disconnect.
+     */
+    LOGOUT
 }

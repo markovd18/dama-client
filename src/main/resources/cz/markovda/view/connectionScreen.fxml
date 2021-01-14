@@ -19,13 +19,22 @@
                   <AnchorPane layoutX="276.0" layoutY="191.0" prefHeight="318.0" prefWidth="313.0" style="-fx-background-color: white; -fx-background-radius: 155px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 20, 0, 0, 0);">
                      <children>
                         <TextField fx:id="addressInput" layoutX="38.0" layoutY="188.0" prefHeight="28.0" prefWidth="149.0" />
-                        <Label id="errorLabel" layoutX="67.0" layoutY="159.0" text="Server address" />
-                        <Button layoutX="128.0" layoutY="241.0" mnemonicParsing="false" onAction="#connectToServer" text="Connect" />
-                        <TextField fx:id="portInput" layoutX="210.0" layoutY="188.0" prefHeight="28.0" prefWidth="60.0" />
-                        <Label layoutX="227.0" layoutY="159.0" text="Port" />
-                        <Label layoutX="86.0" layoutY="90.0" text="Draughts">
+                        <Label id="errorLabel" layoutX="59.0" layoutY="158.0" text="Server address">
                            <font>
-                              <Font name="System Bold" size="30.0" />
+                              <Font size="15.0" />
+                           </font></Label>
+                        <Button layoutX="111.0" layoutY="232.0" mnemonicParsing="false" onAction="#connectToServer" prefHeight="42.0" prefWidth="91.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 15, 0, 0, 0); -fx-background-radius: 10px;" text="Connect">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font></Button>
+                        <TextField fx:id="portInput" layoutX="210.0" layoutY="188.0" prefHeight="28.0" prefWidth="60.0" />
+                        <Label layoutX="227.0" layoutY="159.0" text="Port">
+                           <font>
+                              <Font size="15.0" />
+                           </font></Label>
+                        <Label layoutX="71.0" layoutY="64.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 15, 0, 0, 0);" text="Draughts">
+                           <font>
+                              <Font name="System Bold" size="37.0" />
                            </font>
                         </Label>
                      </children>

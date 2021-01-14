@@ -31,15 +31,13 @@ public class LoginController extends ApplicationController {
         }
 
         Connector.getInstance().sendRequest(loginRequest);
-        //TODO markovda display "progressbar" and wait for confirmation message
-
+        /// If the nickname is invalid, will be removed by the connector later
+        Connector.getInstance().getSessionInfo().getUser().setNickname(nickname);
     }
 
     @FXML
     public void setServerInfo(final String address, final String port) {
         serverInfoLabel.setText(address + ':' + port);
-        serverInfoLabel.setOpacity(1);
-        //TODO markovda label doesn't change when window is rendered
     }
 
     @FXML

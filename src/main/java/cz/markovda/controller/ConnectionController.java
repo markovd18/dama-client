@@ -29,23 +29,24 @@ public class ConnectionController extends ApplicationController {
      * Connects to server instance with address and port given from input fields in the connection screen.
      */
     public void connectToServer() {
-        try {
-            Connector.getInstance().connect(addressInput.getText(), Integer.parseInt(portInput.getText()));
-            switchToLoginScreen();
+        if (addressInput.getText().isEmpty()) {
+            Renderer.showInformationWindow("Please fill the server address!");
+        } else if (portInput.getText().isEmpty()) {
+            Renderer.showInformationWindow("Please fill the server port!");
+        } else {
 
-            //TODO markovda create thread for reading info from server
-        } catch (IOException e) {
-            logger.error("Error while establishing connection", e);
-            Renderer.showInformationWindow("Error establishing connection to the server!");
+            try {
+                Connector.getInstance().connect(addressInput.getText(), Integer.parseInt(portInput.getText()));
+                switchToLoginScreen();
+            } catch (IOException e) {
+                logger.error("Error while establishing connection", e);
+                Renderer.showInformationWindow("Error establishing connection to the server!");
+            }
         }
     }
 
     @FXML
     private void switchToLoginScreen() throws IOException {
-        LoginController loginController = ControllerFactory.getLoginController();
-        if (loginController != null) {
-            Renderer.displayLoginScreen();
-            loginController.setServerInfo(addressInput.getText(), portInput.getText());
-        }
+        Renderer.displayLoginScreen(addressInput.getText(), portInput.getText());
     }
 }

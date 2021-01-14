@@ -1,5 +1,7 @@
 package cz.markovda.view;
 
+import cz.markovda.controller.LobbyController;
+import cz.markovda.controller.LoginController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -23,6 +25,7 @@ public class Renderer {
 
     private static final Logger logger = LoggerFactory.getLogger(Renderer.class);
 
+    private static Stage stage;
     private static Scene scene;
     private static double xOffset;
     private static double yOffset;
@@ -31,17 +34,19 @@ public class Renderer {
      * Initializes application to the default entry state - displays connection screen for connecting
      * to the server.
      *
-     * @param stage JavaFX Application stage to display screens onto
+     * @param newStage JavaFX Application stage to display screens onto
      * @throws IOException if loading connection screen fxml fails
      */
-    public static void initializeApp(Stage stage) throws IOException {
+    public static void initializeApp(Stage newStage) throws IOException {
+        stage = newStage;
+
         scene = new Scene(loadFXML(Window.CONNECTION_SCREEN));
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setScene(scene);
         scene.setFill(Color.TRANSPARENT);
         stage.setTitle("Draughts");
         stage.show();
-        setMoveListeners(stage);
+        setMoveListeners();
     }
 
     public static void displayConnectionScreen() {
@@ -52,11 +57,35 @@ public class Renderer {
         }
     }
 
-    public static void displayLoginScreen() {
+    public static void displayLoginScreen(final String address, final String port) {
+        FXMLLoader loader = new FXMLLoader(new ViewLoader().loadView(Window.LOGIN_SCREEN));
         try {
-            setRoot(Window.LOGIN_SCREEN);
-        } catch (IOException e) {
+            Parent parent = loader.load();
+
+            LoginController controller = loader.getController();
+            controller.setServerInfo(address, port);
+
+            scene.setRoot(parent);
+
+        } catch (IOException e){
             logger.error("Error displaying login screen!", e);
+            showInformationWindow("Error occurred while displaying login screen. See logs...");
+        }
+    }
+
+    public static void displayLobby(final String serverInfo, final String nickname) {
+        FXMLLoader loader = new FXMLLoader(new ViewLoader().loadView(Window.LOBBY));
+        try {
+            Parent parent = loader.load();
+
+            LobbyController controller = loader.getController();
+            controller.setInfoLabels(serverInfo, nickname);
+
+            scene.setRoot(parent);
+
+        } catch (IOException e) {
+            logger.error("Error displaying lobby!", e);
+            showInformationWindow("Error occurred while displaying lobby. See logs...");
         }
     }
 
@@ -102,7 +131,7 @@ public class Renderer {
         return fxmlLoader.load();
     }
 
-    private static void setMoveListeners(Stage stage) {
+    private static void setMoveListeners() {
         scene.setOnMousePressed(mouseEvent ->  {
             xOffset = mouseEvent.getSceneX();
             yOffset = mouseEvent.getSceneY();

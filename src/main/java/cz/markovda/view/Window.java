@@ -8,7 +8,8 @@ package cz.markovda.view;
  */
 public enum Window {
     CONNECTION_SCREEN("connectionScreen.fxml"),
-    LOGIN_SCREEN("loginScreen.fxml");
+    LOGIN_SCREEN("loginScreen.fxml"),
+    LOBBY("lobby.fxml");
 
     private final String fileName;
 

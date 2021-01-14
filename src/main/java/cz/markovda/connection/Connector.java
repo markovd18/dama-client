@@ -4,6 +4,8 @@ import cz.markovda.connection.vo.Server;
 import cz.markovda.connection.vo.SessionInfo;
 import cz.markovda.connection.vo.User;
 import cz.markovda.request.Request;
+import cz.markovda.request.Response;
+import cz.markovda.view.Renderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Singleton class for connecting to a server instance.
@@ -77,6 +80,8 @@ public class Connector {
             connected = true;
             sessionInfo = new SessionInfo(new Server(host, port), new User());
             logger.debug("Connected...");
+
+            new Thread(this::listenForResponses).start();
         } else {
             throw new IOException("Error establishing connection to server");
         }
@@ -201,5 +206,69 @@ public class Connector {
         sb.append(STOP_CHAR);
 
         return sb.toString();
+    }
+
+    private void listenForResponses() {
+        InputStream inputStream = getStreamFromServer();
+        if (inputStream == null) {
+            return;
+        }
+
+        int availableBytes;
+        while (!connectionSocket.isClosed()) {
+            try {
+                availableBytes = inputStream.available();
+                if (availableBytes > 0) {
+                    byte[] buffer = inputStream.readNBytes(availableBytes);
+                    String message = new String(buffer, StandardCharsets.UTF_8);
+                    processResponse(message.substring(0, message.length() - 1));
+                    logger.debug("Incomming message: {}", message);
+                }
+            } catch (IOException e) {
+                logger.error("Error while reading server responses", e);
+            }
+        }
+    }
+
+    private void processResponse(final String response) {
+        String[] tokens = response.split("\\|");
+        int code = Integer.parseInt(tokens[0]);
+
+        if (code == Response.NEW_CONNECTION_OK.getCode()) {
+            sessionInfo.getUser().setUserId(Integer.parseInt(tokens[1]));
+
+            String serverInfo = sessionInfo.getServer().getAddress() + ':' +
+                    sessionInfo.getServer().getPort();
+
+            Renderer.displayLobby(serverInfo,sessionInfo.getUser().getNickname());
+        } else if (code == Response.RECONNECT_OK.getCode()) {
+            sessionInfo.getUser().setUserId(Integer.parseInt(tokens[1]));
+
+            String serverInfo = sessionInfo.getServer().getAddress() + ':' +
+                    sessionInfo.getServer().getPort();
+            Renderer.displayLobby(serverInfo, sessionInfo.getUser().getNickname());
+            //TODO markovda when user was in game, we have to display the game
+        } else if (code == Response.CONNECT_INVALID_NICK.getCode()) {
+            sessionInfo.getUser().setUserId(0);
+            sessionInfo.getUser().setNickname(null);
+        } else if (code == Response.CONNECT_INVALID_ID.getCode()) {
+            // can it even happen??
+            logger.warn("Invalid ID was sent to the server!");
+        } else if (code == Response.CANNOT_RECONNECT.getCode()) {
+            // can it eve happen?
+            logger.warn("Invalid request to reconnect was sent!");
+        } else if (code == Response.LOGOUT_OK.getCode()) {
+            sessionInfo.getUser().setUserId(0);
+            sessionInfo.getUser().setNickname(null);
+            Renderer.displayLoginScreen(sessionInfo.getServer().getAddress(), String.valueOf(sessionInfo.getServer().getPort()));
+        } else if (code == Response.LOGOUT_INVALID_USER.getCode()) {
+            // can it even happen??
+            logger.warn("Invalid ID sent during logout attempt");
+        } else if (code == Response.CANNOT_LOGOUT.getCode()) {
+            // can it even happen?
+            logger.warn("Requirements for logging out not met!");
+        }
+
+        logger.warn("Unrecognized response: {}", response);
     }
 }
