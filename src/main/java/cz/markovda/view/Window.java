@@ -9,7 +9,9 @@ package cz.markovda.view;
 public enum Window {
     CONNECTION_SCREEN("connectionScreen.fxml"),
     LOGIN_SCREEN("loginScreen.fxml"),
-    LOBBY("lobby.fxml");
+    LOBBY("lobby.fxml"),
+    LOADING_SCREEN("gameLoadingScreen.fxml"),
+    GAME_SCREEN("gameScreen.fxml");
 
     private final String fileName;
 

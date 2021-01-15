@@ -11,5 +11,17 @@ public enum RequestType {
     /**
      * Request to logout the player from the server. Doesn't disconnect.
      */
-    LOGOUT
+    LOGOUT,
+    /**
+     * Request to return all games waiting for second player to join.
+     */
+    GET_GAMES,
+    /**
+     * Request to create new game and join it.
+     */
+    CREATE_GAME,
+    /**
+     * Request to exit current game.
+     */
+    EXIT_GAME
 }

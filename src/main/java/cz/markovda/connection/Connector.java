@@ -4,8 +4,11 @@ import cz.markovda.connection.vo.Server;
 import cz.markovda.connection.vo.SessionInfo;
 import cz.markovda.connection.vo.User;
 import cz.markovda.request.Request;
+import cz.markovda.request.RequestType;
 import cz.markovda.request.Response;
 import cz.markovda.view.Renderer;
+import javafx.application.Platform;
+import javafx.scene.control.ButtonType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -240,7 +243,8 @@ public class Connector {
             String serverInfo = sessionInfo.getServer().getAddress() + ':' +
                     sessionInfo.getServer().getPort();
 
-            Renderer.displayLobby(serverInfo,sessionInfo.getUser().getNickname());
+            sendRequest(new Request(RequestType.GET_GAMES));
+            Platform.runLater(() -> Renderer.displayLobby(serverInfo,sessionInfo.getUser().getNickname()));
         } else if (code == Response.RECONNECT_OK.getCode()) {
             sessionInfo.getUser().setUserId(Integer.parseInt(tokens[1]));
 
@@ -260,13 +264,47 @@ public class Connector {
         } else if (code == Response.LOGOUT_OK.getCode()) {
             sessionInfo.getUser().setUserId(0);
             sessionInfo.getUser().setNickname(null);
-            Renderer.displayLoginScreen(sessionInfo.getServer().getAddress(), String.valueOf(sessionInfo.getServer().getPort()));
+            Platform.runLater(() -> Renderer.displayLoginScreen(
+                    sessionInfo.getServer().getAddress(), String.valueOf(sessionInfo.getServer().getPort())));
+
         } else if (code == Response.LOGOUT_INVALID_USER.getCode()) {
             // can it even happen??
             logger.warn("Invalid ID sent during logout attempt");
         } else if (code == Response.CANNOT_LOGOUT.getCode()) {
             // can it even happen?
             logger.warn("Requirements for logging out not met!");
+        } else if (code == Response.GET_GAMES_OK.getCode()) {
+            // TODO markovda parse response and display lobby
+        } else if (code == Response.GET_GAMES_FAIL.getCode()) {
+            // can it even happen?
+            logger.error("Cannot retrieve games list! Invalid player state.");
+        } else if (code == Response.CREATE_GAME_OK.getCode()) {
+            //TODO markovda display game screen and wait for second player
+            Platform.runLater(Renderer::displayLoadingScreen);
+        } else if (code == Response.CREATE_GAME_FAIL_STATE.getCode()) {
+            // can it even happen?
+            logger.error("Cannot create new game. Player not in lobby!");
+            Platform.runLater(() -> Renderer.showInformationWindow("Error while creating new game! See logs..."));
+        } else if (code == Response.CREATE_GAME_FAIL_ID.getCode()) {
+            // can it even happen?
+            logger.error("Cannot create new game. Player not logged in!");
+            Platform.runLater(() -> Renderer.showInformationWindow("Error while creating new game! See logs..."));
+        } else if (code == Response.EXIT_GAME_OK.getCode()) {
+            Platform.runLater(() -> {
+                if (Renderer.showConfirmationWindow("") == ButtonType.YES) {
+
+                    String serverInfo = sessionInfo.getServer().getAddress() + ':' +
+                            sessionInfo.getServer().getPort();
+                    Renderer.displayLobby(serverInfo, sessionInfo.getUser().getNickname());
+                }
+            });
+        } else if (code == Response.EXIT_GAME_FAIL_ID.getCode()) {
+            // can it even happen?
+            logger.error("Cannot exit game when not logged in!");
+            Platform.runLater(() -> Renderer.showInformationWindow("Error while exiting the game! See logs..."));
+        } else if (code == Response.EXIT_GAME_FAIL_STATE.getCode()) {
+            logger.error("Cannot exit game when not in a game!");
+            Platform.runLater(() -> Renderer.showInformationWindow("Error while exiting the game! See logs..."));
         }
 
         logger.warn("Unrecognized response: {}", response);

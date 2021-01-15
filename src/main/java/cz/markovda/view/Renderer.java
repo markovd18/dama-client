@@ -43,10 +43,9 @@ public class Renderer {
         scene = new Scene(loadFXML(Window.CONNECTION_SCREEN));
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setScene(scene);
-        scene.setFill(Color.TRANSPARENT);
         stage.setTitle("Draughts");
         stage.show();
-        setMoveListeners();
+        initializeScene();
     }
 
     public static void displayConnectionScreen() {
@@ -82,10 +81,32 @@ public class Renderer {
             controller.setInfoLabels(serverInfo, nickname);
 
             scene.setRoot(parent);
-
+            stage.sizeToScene();
         } catch (IOException e) {
             logger.error("Error displaying lobby!", e);
             showInformationWindow("Error occurred while displaying lobby. See logs...");
+        }
+    }
+
+    public static void displayLoadingScreen() {
+        FXMLLoader loader = new FXMLLoader(new ViewLoader().loadView(Window.LOADING_SCREEN));
+        try {
+            Parent parent = loader.load();
+
+            scene.setRoot(parent);
+            stage.sizeToScene();
+        } catch (IOException e) {
+            logger.error("Error displaying loading screen!", e);
+            showInformationWindow("Error occurred while displaying loading screen. See logs...");
+        }
+    }
+
+    public static void displayGameScreen() {
+        try {
+            setRoot(Window.GAME_SCREEN);
+        } catch (IOException e) {
+            logger.error("Error displaying game screen!", e);
+            showInformationWindow("Error occurred while displaying game screen. See logs...");
         }
     }
 
@@ -123,12 +144,18 @@ public class Renderer {
      */
     private static void setRoot(final Window window) throws IOException {
         scene.setRoot(loadFXML(window));
+        stage.sizeToScene();
     }
 
 
     private static Parent loadFXML(final Window window) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(new ViewLoader().loadView(window));
         return fxmlLoader.load();
+    }
+
+    private static void initializeScene() {
+        scene.setFill(Color.TRANSPARENT);
+        setMoveListeners();
     }
 
     private static void setMoveListeners() {
