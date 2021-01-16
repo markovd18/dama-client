@@ -3,12 +3,12 @@ package cz.markovda.connection;
 import cz.markovda.connection.vo.Server;
 import cz.markovda.connection.vo.SessionInfo;
 import cz.markovda.connection.vo.User;
+import cz.markovda.game.LobbyGame;
 import cz.markovda.request.Request;
 import cz.markovda.request.RequestType;
 import cz.markovda.request.Response;
 import cz.markovda.view.Renderer;
 import javafx.application.Platform;
-import javafx.scene.control.ButtonType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +17,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Singleton class for connecting to a server instance.
@@ -244,13 +247,11 @@ public class Connector {
                     sessionInfo.getServer().getPort();
 
             sendRequest(new Request(RequestType.GET_GAMES));
-            Platform.runLater(() -> Renderer.displayLobby(serverInfo,sessionInfo.getUser().getNickname()));
         } else if (code == Response.RECONNECT_OK.getCode()) {
             sessionInfo.getUser().setUserId(Integer.parseInt(tokens[1]));
 
             String serverInfo = sessionInfo.getServer().getAddress() + ':' +
                     sessionInfo.getServer().getPort();
-            Renderer.displayLobby(serverInfo, sessionInfo.getUser().getNickname());
             //TODO markovda when user was in game, we have to display the game
         } else if (code == Response.CONNECT_INVALID_NICK.getCode()) {
             sessionInfo.getUser().setUserId(0);
@@ -274,12 +275,20 @@ public class Connector {
             // can it even happen?
             logger.warn("Requirements for logging out not met!");
         } else if (code == Response.GET_GAMES_OK.getCode()) {
-            // TODO markovda parse response and display lobby
+            Platform.runLater(() -> {
+                List<LobbyGame> games = new ArrayList<>();
+                for (int i = 1; i < tokens.length; i++) {
+                    games.add(new LobbyGame(tokens[i]));
+                }
+
+                String serverInfo = sessionInfo.getServer().getAddress() + ':' +
+                        sessionInfo.getServer().getPort();
+                Renderer.displayLobby(serverInfo, sessionInfo.getUser().getNickname(), games);
+            });
         } else if (code == Response.GET_GAMES_FAIL.getCode()) {
             // can it even happen?
             logger.error("Cannot retrieve games list! Invalid player state.");
         } else if (code == Response.CREATE_GAME_OK.getCode()) {
-            //TODO markovda display game screen and wait for second player
             Platform.runLater(Renderer::displayLoadingScreen);
         } else if (code == Response.CREATE_GAME_FAIL_STATE.getCode()) {
             // can it even happen?
@@ -291,12 +300,10 @@ public class Connector {
             Platform.runLater(() -> Renderer.showInformationWindow("Error while creating new game! See logs..."));
         } else if (code == Response.EXIT_GAME_OK.getCode()) {
             Platform.runLater(() -> {
-                if (Renderer.showConfirmationWindow("") == ButtonType.YES) {
-
                     String serverInfo = sessionInfo.getServer().getAddress() + ':' +
                             sessionInfo.getServer().getPort();
-                    Renderer.displayLobby(serverInfo, sessionInfo.getUser().getNickname());
-                }
+                    Renderer.displayLobby(serverInfo, sessionInfo.getUser().getNickname(), Collections.emptyList());
+                    //sendRequest(new Request(RequestType.GET_GAMES));
             });
         } else if (code == Response.EXIT_GAME_FAIL_ID.getCode()) {
             // can it even happen?
@@ -305,6 +312,9 @@ public class Connector {
         } else if (code == Response.EXIT_GAME_FAIL_STATE.getCode()) {
             logger.error("Cannot exit game when not in a game!");
             Platform.runLater(() -> Renderer.showInformationWindow("Error while exiting the game! See logs..."));
+        } else if (code == Response.NEW_GAME.getCode()) {
+            logger.debug("New game created!");
+            Platform.runLater(() -> Renderer.addLobbyGame(new LobbyGame(tokens[1])));
         }
 
         logger.warn("Unrecognized response: {}", response);

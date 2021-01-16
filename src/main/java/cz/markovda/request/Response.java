@@ -22,7 +22,8 @@ public enum Response {
     CREATE_GAME_FAIL_ID(407),
     EXIT_GAME_OK(205),
     EXIT_GAME_FAIL_ID(408),
-    EXIT_GAME_FAIL_STATE(409);
+    EXIT_GAME_FAIL_STATE(409),
+    NEW_GAME(250);
 
     final int code;
 

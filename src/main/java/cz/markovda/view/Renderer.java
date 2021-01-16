@@ -2,6 +2,7 @@ package cz.markovda.view;
 
 import cz.markovda.controller.LobbyController;
 import cz.markovda.controller.LoginController;
+import cz.markovda.game.LobbyGame;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Utility class for displaying objects onto the screen.
@@ -29,6 +31,8 @@ public class Renderer {
     private static Scene scene;
     private static double xOffset;
     private static double yOffset;
+
+    private static LobbyController lobbyController;
 
     /**
      * Initializes application to the default entry state - displays connection screen for connecting
@@ -72,13 +76,16 @@ public class Renderer {
         }
     }
 
-    public static void displayLobby(final String serverInfo, final String nickname) {
+    public static void displayLobby(final String serverInfo,
+                                    final String nickname,
+                                    final List<LobbyGame> games) {
         FXMLLoader loader = new FXMLLoader(new ViewLoader().loadView(Window.LOBBY));
         try {
             Parent parent = loader.load();
 
-            LobbyController controller = loader.getController();
-            controller.setInfoLabels(serverInfo, nickname);
+            lobbyController = loader.getController();
+            lobbyController.setInfoLabels(serverInfo, nickname);
+            lobbyController.addGames(games);
 
             scene.setRoot(parent);
             stage.sizeToScene();
@@ -86,6 +93,10 @@ public class Renderer {
             logger.error("Error displaying lobby!", e);
             showInformationWindow("Error occurred while displaying lobby. See logs...");
         }
+    }
+
+    public static void addLobbyGame(final LobbyGame newGame) {
+        lobbyController.addGame(newGame);
     }
 
     public static void displayLoadingScreen() {

@@ -56,7 +56,7 @@
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <Button fx:id="joinBtn1" layoutX="70.0" layoutY="145.0" mnemonicParsing="false" style="-fx-background-radius: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 15, 0, 0, 0);" text="Join" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0">
+                        <Button fx:id="joinBtn1" layoutX="70.0" layoutY="145.0" mnemonicParsing="false" onAction="#joinGame" style="-fx-background-radius: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 15, 0, 0, 0);" text="Join" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0">
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font>
@@ -74,7 +74,7 @@
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <Button fx:id="joinBtn2" layoutX="83.0" layoutY="147.0" mnemonicParsing="false" style="-fx-background-radius: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 15, 0, 0, 0);" text="Join" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0">
+                        <Button fx:id="joinBtn2" layoutX="83.0" layoutY="147.0" mnemonicParsing="false" onAction="#joinGame" style="-fx-background-radius: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 15, 0, 0, 0);" text="Join" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0">
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font>
@@ -92,7 +92,7 @@
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <Button fx:id="joinBtn3" layoutX="78.0" layoutY="149.0" mnemonicParsing="false" style="-fx-background-radius: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 15, 0, 0, 0);" text="Join" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0">
+                        <Button fx:id="joinBtn3" layoutX="78.0" layoutY="149.0" mnemonicParsing="false" onAction="#joinGame" style="-fx-background-radius: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 15, 0, 0, 0);" text="Join" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0">
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font>
@@ -110,7 +110,7 @@
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <Button fx:id="joinBtn4" layoutX="81.0" layoutY="147.0" mnemonicParsing="false" style="-fx-background-radius: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 15, 0, 0, 0);" text="Join" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0">
+                        <Button fx:id="joinBtn4" layoutX="81.0" layoutY="147.0" mnemonicParsing="false" onAction="#joinGame" style="-fx-background-radius: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 15, 0, 0, 0);" text="Join" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0">
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font>
@@ -128,7 +128,7 @@
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <Button fx:id="joinBtn5" layoutX="81.0" layoutY="152.0" mnemonicParsing="false" style="-fx-background-radius: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 15, 0, 0, 0);" text="Join" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0">
+                        <Button fx:id="joinBtn5" layoutX="81.0" layoutY="152.0" mnemonicParsing="false" onAction="#joinGame" style="-fx-background-radius: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 15, 0, 0, 0);" text="Join" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0">
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font>
@@ -146,7 +146,7 @@
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <Button fx:id="joinBtn6" layoutX="81.0" layoutY="148.0" mnemonicParsing="false" style="-fx-background-radius: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 15, 0, 0, 0);" text="Join" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0">
+                        <Button fx:id="joinBtn6" layoutX="81.0" layoutY="148.0" mnemonicParsing="false" onAction="#joinGame" style="-fx-background-radius: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 15, 0, 0, 0);" text="Join" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0">
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font>
