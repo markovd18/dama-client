@@ -34,6 +34,8 @@ public class Renderer {
 
     private static LobbyController lobbyController;
 
+    private static Window displayedWindow;
+
     /**
      * Initializes application to the default entry state - displays connection screen for connecting
      * to the server.
@@ -50,16 +52,27 @@ public class Renderer {
         stage.setTitle("Draughts");
         stage.show();
         initializeScene();
+        displayedWindow = Window.CONNECTION_SCREEN;
     }
 
+    /**
+     * Displays connection screen with textfields to insert sever address and port.
+     */
     public static void displayConnectionScreen() {
         try {
             setRoot(Window.CONNECTION_SCREEN);
+            displayedWindow = Window.CONNECTION_SCREEN;
         } catch (IOException e) {
             logger.error("Error displaying connection screen!", e);
         }
     }
 
+    /**
+     * Displays login screen with textfield to insert a nickname to login under.
+     *
+     * @param address server address
+     * @param port server port
+     */
     public static void displayLoginScreen(final String address, final String port) {
         FXMLLoader loader = new FXMLLoader(new ViewLoader().loadView(Window.LOGIN_SCREEN));
         try {
@@ -69,13 +82,21 @@ public class Renderer {
             controller.setServerInfo(address, port);
 
             scene.setRoot(parent);
-
+            displayedWindow = Window.LOGIN_SCREEN;
         } catch (IOException e){
             logger.error("Error displaying login screen!", e);
             showInformationWindow("Error occurred while displaying login screen. See logs...");
         }
     }
 
+    /**
+     * Displays lobby with given games to join. Also displays given nickname as a nick of currently
+     * logged in user and server info of the server we are connected to.
+     *
+     * @param serverInfo information about connected server
+     * @param nickname logged in user's nickname
+     * @param games games to show in lobby
+     */
     public static void displayLobby(final String serverInfo,
                                     final String nickname,
                                     final List<LobbyGame> games) {
@@ -89,16 +110,25 @@ public class Renderer {
 
             scene.setRoot(parent);
             stage.sizeToScene();
+            displayedWindow = Window.LOBBY;
         } catch (IOException e) {
             logger.error("Error displaying lobby!", e);
             showInformationWindow("Error occurred while displaying lobby. See logs...");
         }
     }
 
+    /**
+     * Adds new game into the lobby.
+     *
+     * @param newGame new gam eto add to lobby
+     */
     public static void addLobbyGame(final LobbyGame newGame) {
         lobbyController.addGame(newGame);
     }
 
+    /**
+     * Displays loading screen for player, who is waiting for opponent to join his new game.
+     */
     public static void displayLoadingScreen() {
         FXMLLoader loader = new FXMLLoader(new ViewLoader().loadView(Window.LOADING_SCREEN));
         try {
@@ -106,6 +136,7 @@ public class Renderer {
 
             scene.setRoot(parent);
             stage.sizeToScene();
+            displayedWindow = Window.LOADING_SCREEN;
         } catch (IOException e) {
             logger.error("Error displaying loading screen!", e);
             showInformationWindow("Error occurred while displaying loading screen. See logs...");
@@ -145,6 +176,18 @@ public class Renderer {
     public static void showInformationWindow(final String text) {
         Alert infoWindow = new Alert(Alert.AlertType.INFORMATION, text);
         infoWindow.showAndWait();
+    }
+
+    /**
+     * Removes game shown in lobby where player's nick is given nickname.
+     * @param playerNickname opponent's nickname
+     */
+    public static void removeLobbyGame(final String playerNickname) {
+        lobbyController.removeGame(playerNickname);
+    }
+
+    public static Window getDisplayedWindow() {
+        return displayedWindow;
     }
 
     /**

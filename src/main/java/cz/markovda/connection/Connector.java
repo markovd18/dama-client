@@ -3,11 +3,13 @@ package cz.markovda.connection;
 import cz.markovda.connection.vo.Server;
 import cz.markovda.connection.vo.SessionInfo;
 import cz.markovda.connection.vo.User;
+import cz.markovda.game.GameToken;
 import cz.markovda.game.LobbyGame;
 import cz.markovda.request.Request;
 import cz.markovda.request.RequestType;
 import cz.markovda.request.Response;
 import cz.markovda.view.Renderer;
+import cz.markovda.view.Window;
 import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +20,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -241,12 +242,10 @@ public class Connector {
         int code = Integer.parseInt(tokens[0]);
 
         if (code == Response.NEW_CONNECTION_OK.getCode()) {
-            sessionInfo.getUser().setUserId(Integer.parseInt(tokens[1]));
-
-            String serverInfo = sessionInfo.getServer().getAddress() + ':' +
-                    sessionInfo.getServer().getPort();
-
-            sendRequest(new Request(RequestType.GET_GAMES));
+            if (Renderer.getDisplayedWindow() == Window.CONNECTION_SCREEN) {
+                sessionInfo.getUser().setUserId(Integer.parseInt(tokens[1]));
+                sendRequest(new Request(RequestType.GET_GAMES));
+            }
         } else if (code == Response.RECONNECT_OK.getCode()) {
             sessionInfo.getUser().setUserId(Integer.parseInt(tokens[1]));
 
@@ -254,8 +253,10 @@ public class Connector {
                     sessionInfo.getServer().getPort();
             //TODO markovda when user was in game, we have to display the game
         } else if (code == Response.CONNECT_INVALID_NICK.getCode()) {
-            sessionInfo.getUser().setUserId(0);
-            sessionInfo.getUser().setNickname(null);
+            if (Renderer.getDisplayedWindow() == Window.LOGIN_SCREEN) {
+                sessionInfo.getUser().setUserId(0);
+                sessionInfo.getUser().setNickname(null);
+            }
         } else if (code == Response.CONNECT_INVALID_ID.getCode()) {
             // can it even happen??
             logger.warn("Invalid ID was sent to the server!");
@@ -263,10 +264,12 @@ public class Connector {
             // can it eve happen?
             logger.warn("Invalid request to reconnect was sent!");
         } else if (code == Response.LOGOUT_OK.getCode()) {
-            sessionInfo.getUser().setUserId(0);
-            sessionInfo.getUser().setNickname(null);
-            Platform.runLater(() -> Renderer.displayLoginScreen(
-                    sessionInfo.getServer().getAddress(), String.valueOf(sessionInfo.getServer().getPort())));
+            if (Renderer.getDisplayedWindow() == Window.LOBBY) {
+                sessionInfo.getUser().setUserId(0);
+                sessionInfo.getUser().setNickname(null);
+                Platform.runLater(() -> Renderer.displayLoginScreen(
+                        sessionInfo.getServer().getAddress(), String.valueOf(sessionInfo.getServer().getPort())));
+            }
 
         } else if (code == Response.LOGOUT_INVALID_USER.getCode()) {
             // can it even happen??
@@ -275,21 +278,25 @@ public class Connector {
             // can it even happen?
             logger.warn("Requirements for logging out not met!");
         } else if (code == Response.GET_GAMES_OK.getCode()) {
-            Platform.runLater(() -> {
-                List<LobbyGame> games = new ArrayList<>();
-                for (int i = 1; i < tokens.length; i++) {
-                    games.add(new LobbyGame(tokens[i]));
-                }
+            if (Renderer.getDisplayedWindow() == Window.LOGIN_SCREEN) {
+                Platform.runLater(() -> {
+                    List<LobbyGame> games = new ArrayList<>();
+                    for (int i = 1; i < tokens.length; i++) {
+                        games.add(new LobbyGame(tokens[i]));
+                    }
 
-                String serverInfo = sessionInfo.getServer().getAddress() + ':' +
-                        sessionInfo.getServer().getPort();
-                Renderer.displayLobby(serverInfo, sessionInfo.getUser().getNickname(), games);
-            });
+                    String serverInfo = sessionInfo.getServer().getAddress() + ':' +
+                            sessionInfo.getServer().getPort();
+                    Renderer.displayLobby(serverInfo, sessionInfo.getUser().getNickname(), games);
+                });
+            }
         } else if (code == Response.GET_GAMES_FAIL.getCode()) {
             // can it even happen?
             logger.error("Cannot retrieve games list! Invalid player state.");
         } else if (code == Response.CREATE_GAME_OK.getCode()) {
-            Platform.runLater(Renderer::displayLoadingScreen);
+            if (Renderer.getDisplayedWindow() == Window.LOBBY) {
+                Platform.runLater(Renderer::displayLoadingScreen);
+            }
         } else if (code == Response.CREATE_GAME_FAIL_STATE.getCode()) {
             // can it even happen?
             logger.error("Cannot create new game. Player not in lobby!");
@@ -299,12 +306,12 @@ public class Connector {
             logger.error("Cannot create new game. Player not logged in!");
             Platform.runLater(() -> Renderer.showInformationWindow("Error while creating new game! See logs..."));
         } else if (code == Response.EXIT_GAME_OK.getCode()) {
-            Platform.runLater(() -> {
-                    String serverInfo = sessionInfo.getServer().getAddress() + ':' +
-                            sessionInfo.getServer().getPort();
-                    Renderer.displayLobby(serverInfo, sessionInfo.getUser().getNickname(), Collections.emptyList());
-                    //sendRequest(new Request(RequestType.GET_GAMES));
-            });
+            switch (Renderer.getDisplayedWindow()) {
+                case LOADING_SCREEN:
+                case GAME_SCREEN:
+                    sendRequest(new Request(RequestType.GET_GAMES));
+                    break;
+            }
         } else if (code == Response.EXIT_GAME_FAIL_ID.getCode()) {
             // can it even happen?
             logger.error("Cannot exit game when not logged in!");
@@ -315,8 +322,45 @@ public class Connector {
         } else if (code == Response.NEW_GAME.getCode()) {
             logger.debug("New game created!");
             Platform.runLater(() -> Renderer.addLobbyGame(new LobbyGame(tokens[1])));
-        }
+        } else if (code == Response.GAME_DELETED.getCode()) {
+            logger.debug("Some game was deleted!");
+            Platform.runLater(() -> Renderer.removeLobbyGame(tokens[1]));
+        } else if (code == Response.JOIN_GAME_OK.getCode()) {
+            if (Renderer.getDisplayedWindow() == Window.LOBBY) {
+                sendRequest(new Request(RequestType.GET_GAME_STATE));
+            }
+        } else if (code == Response.JOIN_GAME_FAIL_ID.getCode()) {
 
-        logger.warn("Unrecognized response: {}", response);
+        } else if (code == Response.JOIN_GAME_FAIL_STATE.getCode()) {
+
+        } else if (code == Response.JOIN_GAME_FAIL_NICK.getCode()) {
+
+        } else if (code == Response.GET_GAME_STATE_OK.getCode()) {
+            if (Renderer.getDisplayedWindow() == Window.LOBBY) {
+                Platform.runLater(() -> {
+                    String[] playerOne = tokens[1].split(",");
+                    String[] playerTwo = tokens[2].split(",");
+
+                    String playerOneNick = playerOne[0];
+                    String playerTwoNick = playerTwo[0];
+
+                    List<GameToken> playerOneTokens = new ArrayList<>();
+                    List<GameToken> playerTwoTokens = new ArrayList<>();
+
+                    //TODO markovda create player's token list and display game
+
+                });
+            }
+        } else if (code == Response.GET_GAME_STATE_FAIL_ID.getCode()) {
+
+        } else if (code == Response.GET_GAME_STATE_FAIL_STATE.getCode()) {
+
+        }
+//        } else {
+//            logger.warn("Unrecognized response: {}", response);
+//        }
+
     }
+
+
 }

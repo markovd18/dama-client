@@ -75,10 +75,6 @@ public class LobbyController implements Initializable {
     private Label player6;
 
     /*
-     * ---------- JOIN BUTTONS ----------
-     */
-
-    /*
      * ---------- CONTROLLER METHODS ----------
      */
 
@@ -150,11 +146,23 @@ public class LobbyController implements Initializable {
     }
 
     @FXML
-    private void joinGame(ActionEvent event) {
+    private void joinGame(final ActionEvent event) {
         Parent gamePanel = ((Button)event.getSource()).getParent();
-        Label playerNick = (Label) gamePanel.getChildrenUnmodifiable().stream()
-                                .filter((node) -> node instanceof Label && !((Label)node).getText().contains("player"))
+        Label playerNickLabel = (Label) gamePanel.getChildrenUnmodifiable().stream()
+                                .filter((node) -> node instanceof Label && !((Label)node).getText().contains("Opponent:"))
                                 .findFirst().get();
-        System.out.println("Player nick: " + playerNick);
+        Connector.getInstance().sendRequest(new Request(RequestType.JOIN_GAME, playerNickLabel.getText()));
+    }
+
+    public void removeGame(final String playerNickname) {
+
+        games.removeIf(game -> game.getOpponentNick().equals(playerNickname));
+        for (Label nickLabel : labels) {
+            if (nickLabel.getText().equals(playerNickname)) {
+                nickLabel.getParent().setOpacity(0);
+                nickLabel.getParent().setDisable(true);
+                break; //TODO markovda move other panes forward
+            }
+        }
     }
 }

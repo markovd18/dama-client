@@ -23,5 +23,13 @@ public enum RequestType {
     /**
      * Request to exit current game.
      */
-    EXIT_GAME
+    EXIT_GAME,
+    /**
+     * Request to join a game with opponent nick as a parameter
+     */
+    JOIN_GAME,
+    /**
+     * Request to get the game state (token positions) of current game.
+     */
+    GET_GAME_STATE
 }
