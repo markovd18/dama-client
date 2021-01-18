@@ -20,4 +20,8 @@ public class ViewLoader {
         return getClass().getResource(window.getFileName());
     }
 
+    public URL loadResource(final String path) {
+        return getClass().getResource(path);
+    }
+
 }

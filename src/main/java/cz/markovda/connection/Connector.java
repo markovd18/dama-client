@@ -3,14 +3,8 @@ package cz.markovda.connection;
 import cz.markovda.connection.vo.Server;
 import cz.markovda.connection.vo.SessionInfo;
 import cz.markovda.connection.vo.User;
-import cz.markovda.game.GameToken;
-import cz.markovda.game.LobbyGame;
 import cz.markovda.request.Request;
-import cz.markovda.request.RequestType;
-import cz.markovda.request.Response;
-import cz.markovda.view.Renderer;
-import cz.markovda.view.Window;
-import javafx.application.Platform;
+import cz.markovda.request.ResponseActionMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,8 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Singleton class for connecting to a server instance.
@@ -54,6 +47,10 @@ public class Connector {
      * Information about current connection session.
      */
     private SessionInfo sessionInfo;
+    /**
+     * Reactions to responses mapped to response codes.
+     */
+    private final ResponseActionMap responseReactions;
 
     /**
      * Returns the single one existing instance of this class.
@@ -66,6 +63,7 @@ public class Connector {
 
     private Connector() {
         // private constructor, because of singleton
+        responseReactions = new ResponseActionMap();
     }
 
     /**
@@ -228,8 +226,8 @@ public class Connector {
                 if (availableBytes > 0) {
                     byte[] buffer = inputStream.readNBytes(availableBytes);
                     String message = new String(buffer, StandardCharsets.UTF_8);
-                    processResponse(message.substring(0, message.length() - 1));
                     logger.debug("Incomming message: {}", message);
+                    processResponse(message.substring(0, message.length() - 1));
                 }
             } catch (IOException e) {
                 logger.error("Error while reading server responses", e);
@@ -241,16 +239,14 @@ public class Connector {
         String[] tokens = response.split("\\|");
         int code = Integer.parseInt(tokens[0]);
 
-        if (code == Response.NEW_CONNECTION_OK.getCode()) {
+        responseReactions.get(code).execute(Arrays.copyOfRange(tokens, 1, tokens.length));
+        /*if (code == Response.NEW_CONNECTION_OK.getCode()) {
             if (Renderer.getDisplayedWindow() == Window.CONNECTION_SCREEN) {
                 sessionInfo.getUser().setUserId(Integer.parseInt(tokens[1]));
                 sendRequest(new Request(RequestType.GET_GAMES));
             }
         } else if (code == Response.RECONNECT_OK.getCode()) {
-            sessionInfo.getUser().setUserId(Integer.parseInt(tokens[1]));
 
-            String serverInfo = sessionInfo.getServer().getAddress() + ':' +
-                    sessionInfo.getServer().getPort();
             //TODO markovda when user was in game, we have to display the game
         } else if (code == Response.CONNECT_INVALID_NICK.getCode()) {
             if (Renderer.getDisplayedWindow() == Window.LOGIN_SCREEN) {
@@ -358,7 +354,7 @@ public class Connector {
         }
 //        } else {
 //            logger.warn("Unrecognized response: {}", response);
-//        }
+//        }*/
 
     }
 

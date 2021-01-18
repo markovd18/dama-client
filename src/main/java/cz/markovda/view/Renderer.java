@@ -1,8 +1,10 @@
 package cz.markovda.view;
 
+import cz.markovda.controller.GameController;
 import cz.markovda.controller.LobbyController;
 import cz.markovda.controller.LoginController;
 import cz.markovda.game.LobbyGame;
+import cz.markovda.game.Player;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -33,6 +35,7 @@ public class Renderer {
     private static double yOffset;
 
     private static LobbyController lobbyController;
+    private static GameController gameController;
 
     private static Window displayedWindow;
 
@@ -143,9 +146,17 @@ public class Renderer {
         }
     }
 
-    public static void displayGameScreen() {
+    public static void displayGameScreen(final Player playerOne, final Player playerTwo) {
+        FXMLLoader loader = new FXMLLoader(new ViewLoader().loadView(Window.GAME_SCREEN));
         try {
-            setRoot(Window.GAME_SCREEN);
+            Parent parent = loader.load();
+
+            gameController = loader.getController();
+            gameController.setPlayers(playerOne, playerTwo);
+
+            scene.setRoot(parent);
+            stage.sizeToScene();
+            displayedWindow = Window.GAME_SCREEN;
         } catch (IOException e) {
             logger.error("Error displaying game screen!", e);
             showInformationWindow("Error occurred while displaying game screen. See logs...");

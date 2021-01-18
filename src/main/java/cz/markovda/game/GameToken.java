@@ -8,6 +8,9 @@ package cz.markovda.game;
  */
 public class GameToken {
 
+    public static final String BLUE_TOKEN = "cz/markovda/view/token-blue.png";
+    public static final String RED_TOKEN = "cz/markovda/view/token-red.png";
+
     private int positionX;
     private int positionY;
 
