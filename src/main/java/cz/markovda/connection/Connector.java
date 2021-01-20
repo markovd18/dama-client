@@ -245,7 +245,11 @@ public class Connector {
         String[] tokens = response.split("\\|");
         int code = Integer.parseInt(tokens[0]);
 
-        responseReactions.get(code).execute(Arrays.copyOfRange(tokens, 1, tokens.length));
+        try {
+            responseReactions.get(code).execute(Arrays.copyOfRange(tokens, 1, tokens.length));
+        } catch (Exception e) {
+            logger.error("Invalid message from server!", e);
+        }
 
     }
 
