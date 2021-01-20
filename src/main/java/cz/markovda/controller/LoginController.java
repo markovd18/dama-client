@@ -10,6 +10,8 @@ import javafx.scene.control.TextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.regex.Pattern;
+
 public class LoginController extends ApplicationController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -24,11 +26,12 @@ public class LoginController extends ApplicationController {
         String nickname = nicknameInput.getText();
         logger.info("Logging in with nickname {}", nickname);
 
-        Request loginRequest = RequestFactory.createLoginRequest(nickname);
-        if (loginRequest == null) {
-            Renderer.showInformationWindow("Please fill your nickname!");
+        if (nickname == null || nickname.isEmpty() ||
+                !Pattern.matches("[a-zA-Z0-9]*", nickname) || nickname.length() > 20) {
+            Renderer.showInformationWindow("Invalid nickname! Valid characters a-zA-Z0-9");
             return;
         }
+        Request loginRequest = RequestFactory.createLoginRequest(nickname);
 
         Connector.getInstance().sendRequest(loginRequest);
         /// If the nickname is invalid, will be removed by the connector later
