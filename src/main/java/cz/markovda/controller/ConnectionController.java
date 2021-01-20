@@ -35,13 +35,44 @@ public class ConnectionController extends ApplicationController {
             Renderer.showInformationWindow("Please fill the server port!");
         } else {
 
+            int port;
             try {
-                Connector.getInstance().connect(addressInput.getText(), Integer.parseInt(portInput.getText()));
+                port = Integer.parseInt(portInput.getText());
+            } catch (Exception e) {
+                Renderer.showInformationWindow("Invalid port!");
+                return;
+            }
+
+            if (!isPortFree(port)) {
+                Renderer.showInformationWindow("Invalid port!");
+                return;
+            }
+            try {
+                Connector.getInstance().connect(addressInput.getText(), port);
                 switchToLoginScreen();
             } catch (IOException e) {
                 logger.error("Error while establishing connection", e);
                 Renderer.showInformationWindow("Error establishing connection to the server!");
             }
+        }
+    }
+
+    private boolean isPortFree(final int port) {
+        switch (port) {
+            case 20:
+            case 21:
+            case 22:
+            case 25:
+            case 53:
+            case 80:
+            case 110:
+            case 443:
+                return false;
+            default:
+                if (port < 0 ||port > 65535) {
+                    return false;
+                }
+                return true;
         }
     }
 
