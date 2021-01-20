@@ -33,7 +33,7 @@ public class Tile extends Pane {
         setBackground(new Background(new BackgroundFill(baseColor, CornerRadii.EMPTY, Insets.EMPTY)));
         setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)));
 
-        //setOnMouseClicked();
+        setOnMouseClicked((event) -> fireEvent(new TileClickedEvent(TileClickedEvent.TILE_CLICKED, positionX, positionY)));
     }
 
     public int getPositionX() {

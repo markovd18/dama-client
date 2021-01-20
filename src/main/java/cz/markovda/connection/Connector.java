@@ -5,6 +5,8 @@ import cz.markovda.connection.vo.SessionInfo;
 import cz.markovda.connection.vo.User;
 import cz.markovda.request.Request;
 import cz.markovda.request.ResponseActionMap;
+import cz.markovda.view.Renderer;
+import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -231,8 +233,19 @@ public class Connector {
                 }
             } catch (IOException e) {
                 logger.error("Error while reading server responses", e);
+                Platform.runLater(() -> {
+                    Renderer.showConfirmationWindow("Connection error! Shutting down...");
+                    Platform.exit();
+                });
             }
         }
+
+        logger.error("Server connection lost!");
+        Platform.runLater(() -> {
+            Renderer.showConfirmationWindow("Connection error! Shutting down...");
+            Platform.exit();
+        });
+        System.exit(1);
     }
 
     private void processResponse(final String response) {

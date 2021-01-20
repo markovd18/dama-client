@@ -31,5 +31,9 @@ public enum RequestType {
     /**
      * Request to get the game state (token positions) of current game.
      */
-    GET_GAME_STATE
+    GET_GAME_STATE,
+    /**
+     * Request to move the token
+     */
+    TURN
 }

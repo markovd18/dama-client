@@ -12,10 +12,12 @@ public class Player {
 
     private final String nickname;
     private final List<GameToken> tokens;
+    private final List<GameToken> draughts;
 
-    public Player(final String nickname, final List<GameToken> tokens) {
+    public Player(final String nickname, final List<GameToken> tokens, final List<GameToken> draughts) {
         this.nickname = nickname;
         this.tokens = tokens;
+        this.draughts = draughts;
     }
 
     public String getNickname() {
@@ -24,5 +26,9 @@ public class Player {
 
     public List<GameToken> getTokens() {
         return tokens;
+    }
+
+    public List<GameToken> getDraughts() {
+        return draughts;
     }
 }

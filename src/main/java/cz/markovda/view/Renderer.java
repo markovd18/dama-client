@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -53,6 +54,7 @@ public class Renderer {
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setScene(scene);
         stage.setTitle("Draughts");
+        stage.getIcons().add(new Image("cz/markovda/view/token-red.png"));
         stage.show();
         initializeScene();
         displayedWindow = Window.CONNECTION_SCREEN;
@@ -146,13 +148,13 @@ public class Renderer {
         }
     }
 
-    public static void displayGameScreen(final Player playerOne, final Player playerTwo) {
+    public static void displayGameScreen(final Player playerOne, final Player playerTwo, final String playerOnTurn) {
         FXMLLoader loader = new FXMLLoader(new ViewLoader().loadView(Window.GAME_SCREEN));
         try {
             Parent parent = loader.load();
 
             gameController = loader.getController();
-            gameController.setPlayers(playerOne, playerTwo);
+            gameController.setPlayers(playerOne, playerTwo, playerOnTurn);
 
             scene.setRoot(parent);
             stage.sizeToScene();
@@ -233,5 +235,9 @@ public class Renderer {
             stage.setX(mouseEvent.getScreenX()-xOffset);
             stage.setY(mouseEvent.getScreenY()-yOffset);
         });
+    }
+
+    public static void updateGameScreen(final Player playerOne, final Player playerTwo, final String playerOnTurn) {
+        gameController.updateState(playerOne, playerTwo, playerOnTurn);
     }
 }
