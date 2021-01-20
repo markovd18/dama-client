@@ -236,15 +236,9 @@ public class Connector {
                     Renderer.showConfirmationWindow("Connection error! Shutting down...");
                     Platform.exit();
                 });
+                System.exit(1);
             }
         }
-
-        logger.error("Server connection lost!");
-        Platform.runLater(() -> {
-            Renderer.showConfirmationWindow("Connection error! Shutting down...");
-            Platform.exit();
-        });
-        System.exit(1);
     }
 
     private void processResponse(final String response) {
@@ -258,22 +252,25 @@ public class Connector {
     private void startPingThread() {
         new Thread(() -> {
             while (true) {
-                sendRequest(new Request(RequestType.PING));
+                if (connected) {
+                    sendRequest(new Request(RequestType.PING));
 
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    logger.error("Ping thread was unexpectedly waken up!", e);
-                }
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        logger.error("Ping thread was unexpectedly waken up!", e);
+                    }
 
-                if (serverUp) {
-                    serverUp = false;
-                } else {
-                    logger.error("Connection to the server lost! Shutting down...");
-                    Platform.runLater(() -> {
-                        Renderer.showConfirmationWindow("Connection lost! Shutting down...");
-                        Platform.exit();
-                    });
+                    if (serverUp) {
+                        serverUp = false;
+                    } else {
+                        logger.error("Connection to the server lost! Shutting down...");
+                        Platform.runLater(() -> {
+                            Renderer.showConfirmationWindow("Connection lost! Shutting down...");
+                            Platform.exit();
+                        });
+                        System.exit(1);
+                    }
                 }
             }
         }).start();
