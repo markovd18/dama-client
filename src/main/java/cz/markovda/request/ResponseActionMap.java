@@ -22,6 +22,7 @@ import cz.markovda.request.action.LogoutOkAction;
 import cz.markovda.request.action.NewConnectionOkAction;
 import cz.markovda.request.action.NewGameAction;
 import cz.markovda.request.action.OpponentDcAction;
+import cz.markovda.request.action.PingAction;
 import cz.markovda.request.action.ReconnectOkAction;
 import cz.markovda.request.action.TurnOkAction;
 
@@ -71,6 +72,8 @@ public class ResponseActionMap {
         responseReactions.put(Response.INVALID_STATE.getCode(), new InvalidStateAction());
         responseReactions.put(Response.GENERAL_ERROR.getCode(), new GeneralErrorAction());
         responseReactions.put(Response.CONNECTION_DROPPED.getCode(), new ConnectionDroppedAction());
+
+        responseReactions.put(Response.PING.getCode(), new PingAction());
     }
 
     /**

@@ -33,7 +33,9 @@ public enum Response {
     INVALID_ID(410),
     INVALID_STATE(420),
     GENERAL_ERROR(450),
-    CONNECTION_DROPPED(460);
+    CONNECTION_DROPPED(460),
+
+    PING(100);
 
     final int code;
 

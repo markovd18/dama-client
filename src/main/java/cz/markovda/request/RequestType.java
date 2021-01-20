@@ -35,5 +35,9 @@ public enum RequestType {
     /**
      * Request to move the token
      */
-    TURN
+    TURN,
+    /**
+     * Request to server to see if it is up
+     */
+    PING
 }
