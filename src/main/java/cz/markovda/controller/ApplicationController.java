@@ -22,6 +22,7 @@ public class ApplicationController {
         if (confirmation == ButtonType.YES) {
             Connector.getInstance().disconnect();
             Platform.exit();
+            System.exit(0);
         }
     }
 }
